@@ -1,0 +1,32 @@
+$targetLog = "D:\cases\ibm france\replicatrion logs\This server\AMPSV02831REP\Task.ampsv02831prd.73.log" 
+
+
+## Functions
+function getpexes($targetLog) {
+	$regex = [regex] '^\[([^]]+)\].+;(\d+);(\d+);(\d+);\d+;\d+;(\d+);\d+\\n$' ## VBR 7
+	
+
+	$reader = [System.IO.File]::OpenText($targetLog)
+	try {
+	 "Time                 Source, Proxy, Netw, Target"
+		for(;;) {
+			$line = $reader.ReadLine()
+			if ($line -eq $null) { break }
+			# process the line
+			$match = $regex.Match($line)
+			if ($match.Success) {
+				$match.groups[1].value + "     " + `
+				$match.groups[2].value + "     " + `
+				$match.groups[3].value + "     " + `
+				$match.groups[4].value + "     " + `
+				$match.groups[5].value
+			}
+		}
+	}
+	finally {
+		$reader.Close()
+	}
+}
+
+## Begin
+getpexes $targetLog | Out-File C:\extracted_pexes.txt
