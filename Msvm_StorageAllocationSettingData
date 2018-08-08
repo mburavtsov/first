@@ -1,0 +1,9 @@
+$instances = gwmi -Namespace root\virtualization\v2 -Query "select * from Msvm_StorageAllocationSettingData where InstanceID like 'Microsoft:6E5465DC-D5EC-4075-842F-353D5EBB346E%'"
+
+foreach ($o in $instances) {
+
+$new_path = $o.InstanceID -replace '\\', '\\'
+$q = "associators of {Msvm_StorageAllocationSettingData.InstanceID=" + '"' + $new_path  + '"' + "}"
+measure-command {gwmi -Namespace root\virtualization\v2 -Query $q} | select Seconds, Milliseconds
+
+}
